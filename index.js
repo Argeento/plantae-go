@@ -123,7 +123,14 @@ function getOrganelleCommand(type, output, fq1, fq2) {
 async function runTask(task, cb) {
   const createDate = () => chalk.magenta(new Date().toLocaleString() + ':')
   log(`${createDate()} ${task}...`)
-  const result = await cb
+
+  let result
+  try {
+    result = await cb
+  } catch (e) {
+    console.log(chalk.red(e))
+  }
+
   log(`${createDate()} ${task} ${chalk.green('DONE')}`)
   return result
 }
