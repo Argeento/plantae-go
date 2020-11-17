@@ -144,7 +144,7 @@ function sh(...args) {
     })
 
     child.stderr.on('data', data => {
-      error(data.toString())
+      write(data.toString())
     })
 
     child.on('close', code => {
