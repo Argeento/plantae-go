@@ -1,4 +1,4 @@
-const csv = require("csvtojson")
+const csv = require('csvtojson')
 const chalk = require('chalk')
 const { spawn, exec } = require('child_process')
 const fs = require('fs')
@@ -13,7 +13,6 @@ async function main() {
     sh('get_organelle_config.py', ['-a', 'embplant_pt,embplant_mt'])
   )
 
-
   /**
    * Get progress
    */
@@ -25,11 +24,10 @@ async function main() {
   }
 
   /**
-  * Iterate over all plants
-  */
+   * Iterate over all plants
+   */
   for (; i < plants.length; i++) {
-    progressToLog = i / plants.length * 100 >> 0
-
+    progressToLog = ((i / plants.length) * 100) >> 0
 
     /**
      * Prepare plant's data
@@ -39,36 +37,21 @@ async function main() {
     const fq1 = `${sra}_1.fastq`
     const fq2 = `${sra}_2.fastq`
 
-
     /**
      * Fetch SRA
      */
-    await runTask(
-      'Removing existing SRR files',
-      exec('rm -rf SRR*')
-    )
-    await runTask(
-      `Fetching ${sra}`,
-      sh('prefetch', ['-p', sra])
-    )
+    await runTask('Removing existing SRR files', exec('rm -rf SRR*'))
+    await runTask(`Fetching ${sra}`, sh('prefetch', ['-p', sra]))
     await runTask(
       `Spliting ${sra}`,
       sh('fastq-dump', ['-I', '--split-files', sra])
     )
-    await runTask(
-      'Removing tmp files',
-      exec('rm -rf ' + sra)
-    )
-
+    await runTask('Removing tmp files', exec('rm -rf ' + sra))
 
     /**
      * Create dirs
      */
-    await runTask(
-      'Create dirs',
-      exec(`mkdir -p ${dir}`)
-    )
-
+    await runTask('Create dirs', exec(`mkdir -p ${dir}`))
 
     /**
      * Run Pt and Mt getOrganelle scripts
@@ -82,24 +65,16 @@ async function main() {
       sh(...getOrganelleCommand('embplant_mt', `${dir}/mt`, fq1, fq2))
     )
 
-
     /**
      * Remove fq files
      */
-    await runTask(
-      'Removing fastq files',
-      exec(`rm ${fq1} ${fq2}`)
-    )
-    
-    await runTask(
-       'Saving progress',
-       fs.writeFileSync('progress', i.toString())
-    )
+    await runTask('Removing fastq files', exec(`rm ${fq1} ${fq2}`))
+
+    await runTask('Saving progress', fs.writeFileSync('progress', i.toString()))
   } // End of loop
 }
 
 main()
-
 
 /**
  * Utils
@@ -116,7 +91,20 @@ function write(...args) {
 function getOrganelleCommand(type, output, fq1, fq2) {
   return [
     'get_organelle_from_reads.py',
-    ['-1', fq1, '-2', fq2, '-o', output, '-R', '15', '-k', '21,45,65,85,105', '-F', type]
+    [
+      '-1',
+      fq1,
+      '-2',
+      fq2,
+      '-o',
+      output,
+      '-R',
+      '15',
+      '-k',
+      '21,45,65,85,105',
+      '-F',
+      type
+    ]
   ]
 }
 
