@@ -2,11 +2,30 @@ const csv = require('csvtojson')
 const chalk = require('chalk')
 const { spawn, exec } = require('child_process')
 const fs = require('fs')
+const inquirer = require('inquirer')
 
-let progressToLog = 0
+let currentIndex = 0
 
 async function main() {
   const plants = await csv().fromFile('./input.csv')
+
+  const answers = await inquirer.prompt([
+    {
+      name: 'start',
+      type: 'number',
+      message: 'Start index (incl.):'
+    },
+    {
+      name: 'end',
+      type: 'number',
+      message: 'End index (incl.):'
+    },
+    {
+      name: 'numberOfThreads',
+      type: 'number',
+      message: 'Number of threads:'
+    }
+  ])
 
   await runTask(
     'Initializing mt and pt databases',
@@ -14,20 +33,10 @@ async function main() {
   )
 
   /**
-   * Get progress
-   */
-  let i
-  try {
-    i = parseInt(fs.readFileSync('./progress').toString())
-  } catch (e) {
-    i = 0
-  }
-
-  /**
    * Iterate over all plants
    */
-  for (; i < plants.length; i++) {
-    progressToLog = ((i / plants.length) * 100) >> 0
+  for (let i = answers.start; i <= answers.end; i++) {
+    currentIndex = i
 
     /**
      * Prepare plant's data
@@ -80,7 +89,7 @@ main()
  * Utils
  */
 function log(...args) {
-  process.stdout.write(chalk.yellow(progressToLog + '%') + ' ')
+  process.stdout.write(chalk.yellow(`index: ${currentIndex} `))
   console.log(...args)
 }
 
@@ -103,7 +112,9 @@ function getOrganelleCommand(type, output, fq1, fq2) {
       '-k',
       '21,45,65,85,105',
       '-F',
-      type
+      type,
+      '-t',
+      answers.numberOfThreads
     ]
   ]
 }
