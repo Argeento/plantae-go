@@ -9,23 +9,11 @@ let currentIndex = 0
 async function main() {
   const plants = await csv().fromFile('./input.csv')
 
-  const answers = await inquirer.prompt([
-    {
-      name: 'start',
-      type: 'number',
-      message: 'Start index (incl.):'
-    },
-    {
-      name: 'end',
-      type: 'number',
-      message: 'End index (incl.):'
-    },
-    {
-      name: 'numberOfThreads',
-      type: 'number',
-      message: 'Number of threads:'
-    }
-  ])
+  const answers = {
+  start: '0',
+  end: '2235',
+  numberOfThreads: '40'
+}
 
   await runTask(
     'Initializing mt and pt databases',
