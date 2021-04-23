@@ -49,7 +49,7 @@ async function main() {
     )
     await runTask(
       `Fetching ${sra}`,
-      sh('prefetch', ['-p', sra])
+      sh('prefetch', ['-p', sra, '--max-size', '150G'])
     )
     await runTask(
       `Spliting ${sra}`,
@@ -116,7 +116,7 @@ function write(...args) {
 function getOrganelleCommand(type, output, fq1, fq2) {
   return [
     'get_organelle_from_reads.py',
-    ['-1', fq1, '-2', fq2, '-o', output, '-R', '15', '-k', '21,45,65,85,105', '-F', type]
+    ['-1', fq1, '-2', fq2, '-o', output, '-R', '30', '-k', '21,45,65,85,105', '-F', type, '-t', '24']
   ]
 }
 
