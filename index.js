@@ -2,18 +2,17 @@ const csv = require('csvtojson')
 const chalk = require('chalk')
 const { spawn, exec } = require('child_process')
 const fs = require('fs')
-const inquirer = require('inquirer')
 
 let currentIndex = 0
 
+const answers = {
+  start: 0,
+  end: 2235,
+  numberOfThreads: 40
+}
+
 async function main() {
   const plants = await csv().fromFile('./input.csv')
-
-  const answers = {
-  start: '0',
-  end: '2235',
-  numberOfThreads: '40'
-}
 
   await runTask(
     'Initializing mt and pt databases',
@@ -37,19 +36,8 @@ async function main() {
     /**
      * Fetch SRA
      */
-<<<<<<< HEAD
-    await runTask(
-      'Removing existing SRR files',
-      exec('rm -rf SRR*')
-    )
-    await runTask(
-      `Fetching ${sra}`,
-      sh('prefetch', ['-p', sra, '--max-size', '150G'])
-    )
-=======
     await runTask('Removing existing SRR files', exec('rm -rf SRR*'))
     await runTask(`Fetching ${sra}`, sh('prefetch', ['-p', sra]))
->>>>>>> af16f8fdd48ba812cc2dde83f65c02013f79196a
     await runTask(
       `Spliting ${sra}`,
       sh('fastq-dump', ['-I', '--split-files', sra])
@@ -99,9 +87,6 @@ function write(...args) {
 function getOrganelleCommand(type, output, fq1, fq2) {
   return [
     'get_organelle_from_reads.py',
-<<<<<<< HEAD
-    ['-1', fq1, '-2', fq2, '-o', output, '-R', '30', '-k', '21,45,65,85,105', '-F', type, '-t', '24']
-=======
     [
       '-1',
       fq1,
@@ -118,7 +103,6 @@ function getOrganelleCommand(type, output, fq1, fq2) {
       '-t',
       answers.numberOfThreads
     ]
->>>>>>> af16f8fdd48ba812cc2dde83f65c02013f79196a
   ]
 }
 
